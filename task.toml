@@ -1,0 +1,14 @@
+schema_version = "1.1"
+author_name = "Cursor Agent"
+author_email = "cursor-agent@example.com"
+tags = ["csv", "data-cleaning", "sales", "python"]
+difficulty = "medium"
+category = "data-engineering"
+difficulty_explanation = "The task asks for a small data pipeline with validation, revision handling, currency conversion, signed refunds, deterministic sorting, and aggregate reporting. The work is narrow but has enough edge cases that a brittle implementation will miss some output contracts."
+solution_explanation = "The oracle reads the raw sales export, keeps the highest revision for each order line, validates the surviving rows, converts accepted paid and refunded lines to rounded USD values, writes rejected rows with reasons, and builds a JSON summary from the normalized output."
+verification_explanation = "The verifier checks that all output files are present, validates schemas and sort order, confirms revision deduplication and rejection reasons, verifies selected currency conversions and refund handling, checks summary totals and country aggregates, and makes sure no stale duplicate rows are emitted."
+expert_time_estimate_hours = 0.75
+timeout_seconds = 600
+cpu_count = 2
+memory_mb = 2048
+disk_mb = 4096
