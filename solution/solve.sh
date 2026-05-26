@@ -71,8 +71,28 @@ def reason_for(row):
         return "unsupported_currency"
     return ""
 
-with data_path.open(newline="") as handle:
-    rows = list(csv.DictReader(handle))
+with data_path.open(newline="", encoding="utf-8-sig") as handle:
+    reader = csv.DictReader(handle)
+    required_columns = {
+        "order_id",
+        "revision",
+        "line_id",
+        "sold_at",
+        "customer_id",
+        "country",
+        "sku",
+        "quantity",
+        "unit_price",
+        "currency",
+        "discount_pct",
+        "shipping",
+        "status",
+    }
+    fieldnames = set(reader.fieldnames or [])
+    missing_columns = sorted(required_columns - fieldnames)
+    if missing_columns:
+        raise SystemExit("sales.csv is missing columns: " + ", ".join(missing_columns))
+    rows = list(reader)
 
 latest = {}
 positions = {}
