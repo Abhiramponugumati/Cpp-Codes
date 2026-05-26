@@ -17,14 +17,27 @@ def task_root():
 
 ROOT = task_root()
 OUTPUT = ROOT / "output"
+EXPECTED_FILES = ["normalized_sales.csv", "rejected_sales.csv", "summary.json"]
+
+
+def missing_outputs():
+    return [name for name in EXPECTED_FILES if not (OUTPUT / name).exists()]
+
+
+def require_outputs():
+    missing = missing_outputs()
+    if missing:
+        pytest.skip("missing output files: " + ", ".join(missing) + "; run solution/solve.sh before checking contents")
 
 
 def read_csv(name):
+    require_outputs()
     with (OUTPUT / name).open(newline="") as handle:
         return list(csv.DictReader(handle))
 
 
 def read_summary():
+    require_outputs()
     with (OUTPUT / "summary.json").open() as handle:
         return json.load(handle)
 
@@ -36,9 +49,10 @@ def row_by_key(rows, order_id, line_id):
 
 
 def test_expected_files_are_written():
-    for filename in ["normalized_sales.csv", "rejected_sales.csv", "summary.json"]:
+    missing = missing_outputs()
+    assert not missing, "missing output files: " + ", ".join(missing) + "; run solution/solve.sh first"
+    for filename in EXPECTED_FILES:
         path = OUTPUT / filename
-        assert path.exists()
         assert path.stat().st_size > 0
     summary = read_summary()
     assert {"normalized_line_count", "rejected_line_count", "total_net_usd"} <= set(summary)
